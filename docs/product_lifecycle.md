@@ -1,6 +1,6 @@
 # Sygnit --- Product Development Lifecycle
 
-## 1. Product Discovery and Validation
+## 1. Product Discovery and Validation - Done ✅
 
 ### Purpose
 
