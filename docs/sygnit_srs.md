@@ -1,14 +1,12 @@
 # Sygnit --- Software Requirements Specification (SRS)
 
-**Document status:** Initial draft\
-**Version:** 0.2\
-**Product:** Sygnit\
-**Product type:** Open-source cryptographic toolkit and command-line
-interface\
-**Intended audience:** Developers, maintainers, contributors, testers,
-and reviewers
+- **Document status:** Final
+- **Version:** 1.0
+- **Product:** Sygnit
+- **Product type:** Open-source cryptographic toolkit and command-line interface
+- **Intended audience:** Developers, maintainers, contributors, testers, and reviewers
 
-------------------------------------------------------------------------
+---
 
 ## 1. Introduction
 
@@ -35,33 +33,33 @@ during product discovery and technical design.
 Sygnit will provide a command-line interface (CLI) and reusable core
 functionality for:
 
--   Generating and managing local signing key pairs.
--   Hashing individual files using an approved cryptographic hash
-    algorithm.
--   Creating a manifest representing a defined repository snapshot.
--   Digitally signing file metadata or repository manifests.
--   Verifying signatures using a supplied or configured public key.
--   Recalculating file hashes and identifying content changes.
--   Reporting modified, missing, and unexpected files according to the
-    selected verification policy.
--   Supporting automation through predictable exit codes and
-    machine-readable output.
+- Generating and managing local signing key pairs.
+- Hashing individual files using an approved cryptographic hash
+  algorithm.
+- Creating a manifest representing a defined repository snapshot.
+- Digitally signing file metadata or repository manifests.
+- Verifying signatures using a supplied or configured public key.
+- Recalculating file hashes and identifying content changes.
+- Reporting modified, missing, and unexpected files according to the
+  selected verification policy.
+- Supporting automation through predictable exit codes and
+  machine-readable output.
 
 **Initial product boundary**
 
 The initial release focuses on local signing and verification of files
 and repository snapshots. It is not intended to:
 
--   Prove the real-world identity of a signer without a separate trusted
-    identity mechanism.
--   Prove that signed code is safe, benign, or free from
-    vulnerabilities.
--   Replace Git commit or tag signing, software provenance systems, or
-    complete software supply-chain security platforms.
--   Guarantee that a published binary was built from a particular source
-    tree.
--   Provide a hosted key-management or identity service.
--   Execute, compile, or modify the source files being signed.
+- Prove the real-world identity of a signer without a separate trusted
+  identity mechanism.
+- Prove that signed code is safe, benign, or free from
+  vulnerabilities.
+- Replace Git commit or tag signing, software provenance systems, or
+  complete software supply-chain security platforms.
+- Guarantee that a published binary was built from a particular source
+  tree.
+- Provide a hosted key-management or identity service.
+- Execute, compile, or modify the source files being signed.
 
 **Expected outcome**
 
@@ -76,23 +74,28 @@ the documented verification rules. It is not proof of the signer's
 real-world identity unless the public key has been trusted through an
 independent process.
 
+> [!note]  
+> A valid signature confirms integrity relative to the supplied
+> manifest; it does *not* prove the signer's real-world identity without
+> an independently trusted public key.
+
 ### 1.3 Acceptance Criteria
 
 The initial release will be considered acceptable when:
 
-1.  A user can generate an Ed25519 signing key pair using the supported
-    key-generation workflow.
-2.  Private key material is not printed in normal command output or
-    included in generated repository manifests.
-3.  A user can sign an individual supported file.
-4.  A user can create a deterministic manifest for a repository snapshot
-    under documented file-selection and path-normalization rules.
-5.  A user can sign the repository manifest.
-6.  A user can verify a signature using the corresponding public key.
-7.  Verification detects modified files.
-8.  Verification detects missing files included in the manifest.
-9.  Verification reports unexpected files according to the selected
-    policy.
+1. A user can generate an Ed25519 signing key pair using the supported
+   key-generation workflow.
+2. Private key material is not printed in normal command output or
+   included in generated repository manifests.
+3. A user can sign an individual supported file.
+4. A user can create a deterministic manifest for a repository snapshot
+   under documented file-selection and path-normalization rules.
+5. A user can sign the repository manifest.
+6. A user can verify a signature using the corresponding public key.
+7. Verification detects modified files.
+8. Verification detects missing files included in the manifest.
+9. Verification reports unexpected files according to the selected
+   policy.
 10. Invalid signatures, malformed manifests, missing keys, and
     unreadable files result in clear failure reports and non-zero exit
     codes.
@@ -105,7 +108,7 @@ The initial release will be considered acceptable when:
 14. The README and technical documentation accurately describe the trust
     model, limitations, supported environments, and commands.
 
-------------------------------------------------------------------------
+---
 
 ## 2. Functional Requirements (SMART List)
 
@@ -124,9 +127,6 @@ decisions, implementation tasks, and test cases. Priorities are **P0**
 | FR-KEY-05 | Sygnit should support key rotation and document the process for replacing a key. | P1 | Users can introduce a new public key and stop trusting an old key. |
 | FR-KEY-06 | Sygnit may support key-revocation metadata or a local trust store. | P2 | Revoked keys are represented and checked according to a documented specification. |
 
-
-
-
 ### 2.2 Individual File Signing
 | ID | Requirement | Priority | Acceptance measure |
 | --- | --- | --- | --- |
@@ -136,7 +136,6 @@ decisions, implementation tasks, and test cases. Priorities are **P0**
 | FR-FILE-04 | Sygnit shall verify a signed file using a supplied public key. | P0 | Unmodified content with valid metadata passes verification. |
 | FR-FILE-05 | Sygnit shall report verification failure when file content changes after signing. | P0 | A one-byte modification causes verification to fail. |
 | FR-FILE-06 | Sygnit should support signing multiple selected files in one operation. | P1 | Batch operation reports an individual result for each selected file. |
-
 
 ### 2.3 Repository Snapshot and Manifest
 | ID | Requirement | Priority | Acceptance measure |
@@ -150,7 +149,6 @@ decisions, implementation tasks, and test cases. Priorities are **P0**
 | FR-REPO-07 | Sygnit shall store the manifest and signature in a documented location without including private-key material. | P0 | Generated output contains the manifest and signature but no private key. |
 | FR-REPO-08 | Sygnit should provide options for handling hidden files, with documented defaults. | P1 | Selected file-inclusion policy is consistently reflected in the manifest. |
 | FR-REPO-09 | Sygnit should define and report how symbolic links are handled. | P1 | Symbolic links follow an explicit, tested policy. |
-
 
 ### 2.4 Verification and Integrity Reporting
 | ID | Requirement | Priority | Acceptance measure |
@@ -174,7 +172,6 @@ decisions, implementation tasks, and test cases. Priorities are **P0**
 | FR-CLI-04 | Sygnit shall provide actionable error messages without exposing secrets. | P0 | Error tests confirm useful messages and no private-key leakage. |
 | FR-CLI-05 | Sygnit should provide a status or inspection command for signature and manifest metadata. | P1 | Command displays documented metadata without exposing secrets. |
 
-
 ### 2.6 Automation and Integration
 | ID | Requirement | Priority | Acceptance measure |
 | --- | --- | --- | --- |
@@ -183,7 +180,7 @@ decisions, implementation tasks, and test cases. Priorities are **P0**
 | FR-AUTO-03 | Sygnit should provide examples for verification in CI workflows. | P1 | A documented example successfully runs verification in a CI environment. |
 | FR-AUTO-04 | Sygnit may provide maintained GitHub Actions integration. | P2 | A future release defines and tests the integration contract. |
 
-------------------------------------------------------------------------
+---
 
 ## 3. Non-Functional Requirements and Safety
 
@@ -203,32 +200,36 @@ documented reference hardware and adjusted using test results.
 
 ### 3.2 Safety Invariants and Constraints --- High
 
-1.  **No false success:** Sygnit must never report successful integrity
-    verification if signature verification fails or a required file
-    check fails.
-2.  **Verify before trusting:** Manifest contents must not be treated as
-    authenticated until the manifest signature has been successfully
-    verified.
-3.  **Private-key confidentiality:** Private keys must not be included
-    in manifests, signatures, logs, diagnostic reports, or normal
-    terminal output.
-4.  **No silent file modification:** Signing and verification must not
-    modify source files.
-5.  **Explicit file-selection policy:** Sygnit must document which files
-    are included, excluded, followed, or ignored.
-6.  **Safe path handling:** Manifest paths must be validated to prevent
-    path traversal outside the selected verification root.
-7.  **Safe symbolic-link handling:** Symbolic links must follow a
-    documented policy and must not permit unintended access outside the
-    selected root.
-8.  **No execution of repository content:** Verification must not
-    execute scripts, build commands, hooks, or repository-provided code.
-9.  **Fail closed on ambiguous security state:** Malformed manifests,
-    unsupported algorithms, invalid signatures, and ambiguous trust
-    information must not produce successful verification.
+1. **No false success:** Sygnit must never report successful integrity
+   verification if signature verification fails or a required file
+   check fails.
+2. **Verify before trusting:** Manifest contents must not be treated as
+   authenticated until the manifest signature has been successfully
+   verified.
+3. **Private-key confidentiality:** Private keys must not be included
+   in manifests, signatures, logs, diagnostic reports, or normal
+   terminal output.
+4. **No silent file modification:** Signing and verification must not
+   modify source files.
+5. **Explicit file-selection policy:** Sygnit must document which files
+   are included, excluded, followed, or ignored.
+6. **Safe path handling:** Manifest paths must be validated to prevent
+   path traversal outside the selected verification root.
+7. **Safe symbolic-link handling:** Symbolic links must follow a
+   documented policy and must not permit unintended access outside the
+   selected root.
+8. **No execution of repository content:** Verification must not
+   execute scripts, build commands, hooks, or repository-provided code.
+9. **Fail closed on ambiguous security state:** Malformed manifests,
+   unsupported algorithms, invalid signatures, and ambiguous trust
+   information must not produce successful verification.
 10. **Clear trust communication:** A valid signature must not be
     described as proof of real-world identity unless a separate trust
     mechanism establishes that identity.
+
+> [!IMPORTANT]  
+> Never include private-key material in generated metadata, logs,
+> diagnostic reports, or normal terminal output.
 
 ### 3.3 Security NFRs --- High
 
@@ -247,7 +248,7 @@ documented reference hardware and adjusted using test results.
 | NFR-SEC-11 | Sygnit shall provide a process for reporting security vulnerabilities. | High |
 | NFR-SEC-12 | Sygnit shall be tested against malformed manifests, invalid signatures, path traversal attempts, and adversarial file-system cases. | High |
 
-------------------------------------------------------------------------
+---
 
 ## 4. External Interfaces, Data Schemas and Protocols
 
@@ -275,29 +276,29 @@ API.
 
 ### 4.2 Software Interfaces
 
--   **Runtime:** Node.js, with supported versions documented by the
-    project.
--   **Cryptography:** Node.js built-in cryptographic APIs or another
-    reviewed cryptographic library.
--   **Package distribution:** npm.
--   **Source hosting and collaboration:** Git and GitHub.
--   **Automation:** CI systems such as GitHub Actions, initially through
-    documented CLI usage.
--   **Operating systems:** Windows, Linux, and macOS, subject to
-    compatibility testing.
+- **Runtime:** Node.js, with supported versions documented by the
+  project.
+- **Cryptography:** Node.js built-in cryptographic APIs or another
+  reviewed cryptographic library.
+- **Package distribution:** npm.
+- **Source hosting and collaboration:** Git and GitHub.
+- **Automation:** CI systems such as GitHub Actions, initially through
+  documented CLI usage.
+- **Operating systems:** Windows, Linux, and macOS, subject to
+  compatibility testing.
 
 ### 4.3 File and Directory Interfaces
 
 Sygnit shall accept user-selected file and directory paths. It shall:
 
--   Resolve paths relative to a clearly defined working directory or
-    explicit root.
--   Store repository paths as normalized relative paths.
--   Reject paths that escape the selected root.
--   Define how hidden and ignored files are treated.
--   Define how symbolic links and special files are handled.
--   Avoid including Sygnit's own generated metadata in the snapshot
-    unless explicitly required by the format.
+- Resolve paths relative to a clearly defined working directory or
+  explicit root.
+- Store repository paths as normalized relative paths.
+- Reject paths that escape the selected root.
+- Define how hidden and ignored files are treated.
+- Define how symbolic links and special files are handled.
+- Avoid including Sygnit's own generated metadata in the snapshot
+  unless explicitly required by the format.
 
 ### 4.4 Proposed Manifest Schema
 
@@ -305,7 +306,7 @@ The following is illustrative, not a finalized format. The final schema
 must define canonicalization, field validation, path rules, and version
 compatibility.
 
-``` json
+```json
 {
   "format": "sygnit-manifest",
   "formatVersion": 1,
@@ -335,31 +336,31 @@ presented as authenticated claims.
 
 Signature metadata should identify:
 
--   Manifest format and version.
--   Signature algorithm.
--   Public-key identifier or fingerprint.
--   Signature encoding.
--   Any required domain-separation or context identifier.
+- Manifest format and version.
+- Signature algorithm.
+- Public-key identifier or fingerprint.
+- Signature encoding.
+- Any required domain-separation or context identifier.
 
 The signature file must not contain private key material.
 
 ### 4.6 Protocols and Cryptographic Operations
 
--   File content shall be hashed using the configured approved hash
-    algorithm.
--   The repository manifest shall be serialized using a deterministic
-    canonicalization procedure.
--   The canonical manifest bytes shall be signed using the selected
-    private key.
--   Verification shall validate the signature using the corresponding
-    public key.
--   File integrity verification shall compare recalculated hashes with
-    values in the authenticated manifest.
--   Unsupported algorithm identifiers and format versions shall be
-    rejected or handled through explicitly documented compatibility
-    behavior.
+- File content shall be hashed using the configured approved hash
+  algorithm.
+- The repository manifest shall be serialized using a deterministic
+  canonicalization procedure.
+- The canonical manifest bytes shall be signed using the selected
+  private key.
+- Verification shall validate the signature using the corresponding
+  public key.
+- File integrity verification shall compare recalculated hashes with
+  values in the authenticated manifest.
+- Unsupported algorithm identifiers and format versions shall be
+  rejected or handled through explicitly documented compatibility
+  behavior.
 
-------------------------------------------------------------------------
+---
 
 ## 5. Testing, Simulation and Evaluation Plan
 
@@ -367,79 +368,79 @@ The signature file must not contain private key material.
 
 Testing shall establish that Sygnit:
 
--   Produces valid signatures for supported inputs.
--   Correctly verifies valid signatures.
--   Detects content modifications.
--   Detects missing and unexpected files according to policy.
--   Rejects invalid signatures and malformed metadata.
--   Protects private-key material.
--   Handles file-system edge cases safely.
--   Behaves consistently on supported operating systems.
+- Produces valid signatures for supported inputs.
+- Correctly verifies valid signatures.
+- Detects content modifications.
+- Detects missing and unexpected files according to policy.
+- Rejects invalid signatures and malformed metadata.
+- Protects private-key material.
+- Handles file-system edge cases safely.
+- Behaves consistently on supported operating systems.
 
 ### 5.2 Unit Testing
 
 Unit tests shall cover:
 
--   Key generation and key parsing.
--   File hashing.
--   Manifest creation.
--   Manifest canonicalization.
--   Signature creation and verification.
--   Path normalization.
--   Exclusion rules.
--   Error and exit-code mapping.
+- Key generation and key parsing.
+- File hashing.
+- Manifest creation.
+- Manifest canonicalization.
+- Signature creation and verification.
+- Path normalization.
+- Exclusion rules.
+- Error and exit-code mapping.
 
 ### 5.3 Integration Testing
 
 Integration tests shall cover these complete workflows:
 
-1.  Generate a key pair.
-2.  Sign a file.
-3.  Verify the unchanged file.
-4.  Modify the file and confirm verification fails.
-5.  Generate a repository manifest.
-6.  Sign the manifest.
-7.  Verify an unchanged repository.
-8.  Modify, delete, and add files.
-9.  Confirm the report identifies each relevant difference.
+1. Generate a key pair.
+2. Sign a file.
+3. Verify the unchanged file.
+4. Modify the file and confirm verification fails.
+5. Generate a repository manifest.
+6. Sign the manifest.
+7. Verify an unchanged repository.
+8. Modify, delete, and add files.
+9. Confirm the report identifies each relevant difference.
 
 ### 5.4 Negative and Security Testing
 
 Test cases shall include:
 
--   Invalid public and private keys.
--   Corrupted signature files.
--   Modified manifests.
--   Unsupported manifest versions and algorithms.
--   Duplicate manifest paths.
--   Absolute paths and path traversal sequences.
--   Symbolic links pointing outside the repository.
--   Unreadable files and permission errors.
--   Very large files and manifests.
--   Files changing during hashing.
--   Private-key data accidentally appearing in logs or reports.
+- Invalid public and private keys.
+- Corrupted signature files.
+- Modified manifests.
+- Unsupported manifest versions and algorithms.
+- Duplicate manifest paths.
+- Absolute paths and path traversal sequences.
+- Symbolic links pointing outside the repository.
+- Unreadable files and permission errors.
+- Very large files and manifests.
+- Files changing during hashing.
+- Private-key data accidentally appearing in logs or reports.
 
 ### 5.5 Compatibility Testing
 
 The test matrix shall include:
 
--   Supported Node.js versions.
--   Windows, Linux, and macOS.
--   npm installation from a clean environment.
--   Paths containing spaces and Unicode characters.
--   Different file-system permission behaviors.
+- Supported Node.js versions.
+- Windows, Linux, and macOS.
+- npm installation from a clean environment.
+- Paths containing spaces and Unicode characters.
+- Different file-system permission behaviors.
 
 ### 5.6 Performance Evaluation
 
 Performance testing shall measure:
 
--   Key-generation time.
--   File-hashing throughput.
--   Repository traversal time.
--   Manifest-generation time.
--   Signing and verification time.
--   Peak memory usage.
--   Performance across different file counts and file sizes.
+- Key-generation time.
+- File-hashing throughput.
+- Repository traversal time.
+- Manifest-generation time.
+- Signing and verification time.
+- Peak memory usage.
+- Performance across different file counts and file sizes.
 
 The test environment, hardware, operating system, Node.js version, and
 repository characteristics shall be recorded so results can be
@@ -463,15 +464,15 @@ reproduced.
 
 Before each release:
 
--   Run all automated tests.
--   Review security-sensitive changes.
--   Validate package contents.
--   Test installation from npm.
--   Verify documented examples.
--   Review known defects and limitations.
--   Record the release acceptance result.
+- Run all automated tests.
+- Review security-sensitive changes.
+- Validate package contents.
+- Test installation from npm.
+- Verify documented examples.
+- Review known defects and limitations.
+- Record the release acceptance result.
 
-------------------------------------------------------------------------
+---
 
 ## 6. Operations Runbook, Rollout and Traceability
 
@@ -482,39 +483,42 @@ installation method.
 
 Setup documentation shall explain:
 
--   Supported Node.js and npm versions.
--   Key-generation procedure.
--   Recommended private-key storage and backup practices.
--   Public-key distribution and trust establishment.
--   Basic file-signing and repository-signing workflows.
--   Verification procedures.
+- Supported Node.js and npm versions.
+- Key-generation procedure.
+- Recommended private-key storage and backup practices.
+- Public-key distribution and trust establishment.
+- Basic file-signing and repository-signing workflows.
+- Verification procedures.
+
+> [!TIP]  
+> Obtain and trust the public key independently before verifying a signature.
 
 ### 6.2 Normal Operation
 
 A typical user workflow shall be:
 
-1.  Install Sygnit.
-2.  Generate or configure a signing key pair.
-3.  Select a file or repository snapshot.
-4.  Generate a signature.
-5.  Distribute the signed content, manifest, signature, and public key
-    through appropriate channels.
-6.  Obtain and trust the public key independently.
-7.  Verify the signature.
-8.  Review the integrity report.
+1. Install Sygnit.
+2. Generate or configure a signing key pair.
+3. Select a file or repository snapshot.
+4. Generate a signature.
+5. Distribute the signed content, manifest, signature, and public key
+   through appropriate channels.
+6. Obtain and trust the public key independently.
+7. Verify the signature.
+8. Review the integrity report.
 
 ### 6.3 Failure Handling and Recovery
 
 The operations documentation shall explain how to respond to:
 
--   Invalid signatures.
--   Modified or missing files.
--   Unexpected files.
--   Missing or unreadable keys.
--   Corrupted manifests.
--   Unsupported formats.
--   Permission errors.
--   Incomplete signing or verification operations.
+- Invalid signatures.
+- Modified or missing files.
+- Unexpected files.
+- Missing or unreadable keys.
+- Corrupted manifests.
+- Unsupported formats.
+- Permission errors.
+- Incomplete signing or verification operations.
 
 Sygnit must not silently treat a failed or incomplete operation as
 successful.
@@ -542,13 +546,13 @@ Timestamps alone do not prove when a signature was created.
 
 The project shall:
 
--   Track bugs and feature requests through GitHub Issues.
--   Publish release notes and maintain a changelog.
--   Review dependencies and security advisories.
--   Provide a security vulnerability reporting channel.
--   Maintain supported Node.js and operating-system information.
--   Document breaking changes and migration steps.
--   Review community contributions according to the contribution policy.
+- Track bugs and feature requests through GitHub Issues.
+- Publish release notes and maintain a changelog.
+- Review dependencies and security advisories.
+- Provide a security vulnerability reporting channel.
+- Maintain supported Node.js and operating-system information.
+- Document breaking changes and migration steps.
+- Review community contributions according to the contribution policy.
 
 ### 6.7 Requirements Traceability
 
@@ -573,7 +577,7 @@ documents, implementation issues, and test cases are created. Changes to
 a requirement shall trigger review of its linked design, implementation,
 tests, and documentation.
 
-------------------------------------------------------------------------
+---
 
 ## Appendix A --- Glossary
 
@@ -598,17 +602,17 @@ tests, and documentation.
 The following decisions must be finalized during architecture and
 security design:
 
-1.  Exact manifest and signature file names and directory layout.
-2.  Canonical serialization format and specification.
-3.  Whether file signatures use detached signature files or a shared
-    manifest format.
-4.  Default file inclusion and exclusion behavior.
-5.  Symbolic-link and special-file handling.
-6.  Whether unexpected files cause failure by default or are reported
-    according to a configurable policy.
-7.  Public-key fingerprint format and trust configuration.
-8.  Private-key encryption and storage options.
-9.  Key rotation and revocation model.
+1. Exact manifest and signature file names and directory layout.
+2. Canonical serialization format and specification.
+3. Whether file signatures use detached signature files or a shared
+   manifest format.
+4. Default file inclusion and exclusion behavior.
+5. Symbolic-link and special-file handling.
+6. Whether unexpected files cause failure by default or are reported
+   according to a configurable policy.
+7. Public-key fingerprint format and trust configuration.
+8. Private-key encryption and storage options.
+9. Key rotation and revocation model.
 10. Supported Node.js versions and operating systems.
 11. Stable CLI command names and exit-code definitions.
 12. Whether a public programmatic API is included in the initial
@@ -617,6 +621,6 @@ security design:
 These decisions should be documented before the related features are
 declared stable.
 
-------------------------------------------------------------------------
+---
 
 **End of document**
