@@ -1,7 +1,7 @@
 # Sygnit --- Software Requirements Specification (SRS)
 
 **Document status:** Initial draft\
-**Version:** 0.1\
+**Version:** 0.2\
 **Product:** Sygnit\
 **Product type:** Open-source cryptographic toolkit and command-line
 interface\
@@ -115,317 +115,73 @@ decisions, implementation tasks, and test cases. Priorities are **P0**
 
 ### 2.1 Key Generation and Management
 
-  -----------------------------------------------------------------------
-  ID                Requirement       Priority          Acceptance
-                                                        measure
-  ----------------- ----------------- ----------------- -----------------
-  FR-KEY-01         Sygnit shall      P0                A generated key
-                    generate an                         pair passes a
-                    Ed25519                             signing and
-                    public/private                      verification
-                    key pair through                    test.
-                    a CLI command.                      
+| ID | Requirement | Priority | Acceptance measure |
+| --- | --- | --- | --- |
+| FR-KEY-01 | Sygnit shall generate an Ed25519 public/private key pair through a CLI command. | P0 | Generated key pair successfully passes a signing and verification test. |
+| FR-KEY-02 | Sygnit shall save private and public keys to user-selected or documented default locations. | P0 | Expected key files are created and their locations are reported. |
+| FR-KEY-03 | Sygnit shall allow users to export or display their public key without exposing the private key. | P0 | Public key is displayed or exported successfully without private-key leakage. |
+| FR-KEY-04 | Sygnit shall reject unreadable, malformed, or unsupported key files with a clear error. | P0 | Invalid key files produce an explanatory error and non-zero exit code. |
+| FR-KEY-05 | Sygnit should support key rotation and document the process for replacing a key. | P1 | Users can introduce a new public key and stop trusting an old key. |
+| FR-KEY-06 | Sygnit may support key-revocation metadata or a local trust store. | P2 | Revoked keys are represented and checked according to a documented specification. |
 
-  FR-KEY-02         Sygnit shall save P0                Expected key
-                    private and                         files are created
-                    public keys to                      and their
-                    user-selected or                    locations
-                    documented                          reported.
-                    default                             
-                    locations.                          
 
-  FR-KEY-03         Sygnit shall      P0                Public-key export
-                    support exporting                   succeeds;
-                    or displaying the                   private-key
-                    public key                          contents are
-                    without exposing                    absent from
-                    the private key.                    output.
 
-  FR-KEY-04         Sygnit shall      P0                Invalid key
-                    reject                              fixtures produce
-                    unreadable,                         a non-zero exit
-                    malformed, or                       code and
-                    unsupported key                     explanatory
-                    files with a                        message.
-                    clear error.                        
-
-  FR-KEY-05         Sygnit should     P1                Users can
-                    support key                         introduce a new
-                    rotation and                        public key and
-                    document the                        stop trusting an
-                    process for                         old key.
-                    replacing a key.                    
-
-  FR-KEY-06         Sygnit may        P2                A future
-                    support                             specification
-                    key-revocation                      defines how
-                    metadata or a                       revoked keys are
-                    local trust                         represented and
-                    store.                              checked.
-  -----------------------------------------------------------------------
 
 ### 2.2 Individual File Signing
+| ID | Requirement | Priority | Acceptance measure |
+| --- | --- | --- | --- |
+| FR-FILE-01 | Sygnit shall calculate a cryptographic hash for a selected file using an approved hash algorithm. | P0 | Generated hash matches known test vectors. |
+| FR-FILE-02 | Sygnit shall sign the file's defined signing payload using the user's private key. | P0 | Valid signature is produced and verified using the matching public key. |
+| FR-FILE-03 | Sygnit shall store signature metadata separately from the original file. | P0 | Signing does not modify the original file. |
+| FR-FILE-04 | Sygnit shall verify a signed file using a supplied public key. | P0 | Unmodified content with valid metadata passes verification. |
+| FR-FILE-05 | Sygnit shall report verification failure when file content changes after signing. | P0 | A one-byte modification causes verification to fail. |
+| FR-FILE-06 | Sygnit should support signing multiple selected files in one operation. | P1 | Batch operation reports an individual result for each selected file. |
 
-  -----------------------------------------------------------------------
-  ID                Requirement       Priority          Acceptance
-                                                        measure
-  ----------------- ----------------- ----------------- -----------------
-  FR-FILE-01        Sygnit shall      P0                Output matches
-                    calculate a                         known test
-                    cryptographic                       vectors.
-                    hash for a                          
-                    selected file                       
-                    using an approved                   
-                    hash algorithm.                     
-
-  FR-FILE-02        Sygnit shall sign P0                A valid signature
-                    the file's                          is produced and
-                    defined signing                     verified with the
-                    payload using the                   matching public
-                    user's private                      key.
-                    key.                                
-
-  FR-FILE-03        Sygnit shall      P0                Signing does not
-                    store signature                     modify the
-                    metadata                            original file.
-                    separately from                     
-                    the original                        
-                    file.                               
-
-  FR-FILE-04        Sygnit shall      P0                Unmodified
-                    verify a signed                     content and valid
-                    file using a                        metadata pass
-                    supplied public                     verification.
-                    key.                                
-
-  FR-FILE-05        Sygnit shall      P0                A one-byte
-                    report                              modification
-                    verification                        causes
-                    failure when file                   verification to
-                    content changes                     fail.
-                    after signing.                      
-
-  FR-FILE-06        Sygnit should     P1                A batch operation
-                    support signing                     reports a result
-                    multiple selected                   for each selected
-                    files in one                        file.
-                    operation.                          
-  -----------------------------------------------------------------------
 
 ### 2.3 Repository Snapshot and Manifest
+| ID | Requirement | Priority | Acceptance measure |
+| --- | --- | --- | --- |
+| FR-REPO-01 | Sygnit shall traverse a selected directory and identify files included in the repository snapshot according to documented rules. | P0 | Test repositories produce the expected file list. |
+| FR-REPO-02 | Sygnit shall support exclusion rules for files and directories. | P0 | Excluded paths are absent from the generated manifest. |
+| FR-REPO-03 | Sygnit shall calculate a cryptographic hash for every included regular file. | P0 | Every included file has a corresponding hash in the manifest. |
+| FR-REPO-04 | Sygnit shall generate a versioned repository manifest containing relative paths, hashes, algorithm identifiers, and required metadata. | P0 | Generated manifest validates against the published schema. |
+| FR-REPO-05 | Sygnit shall serialize manifests deterministically using documented canonicalization rules. | P0 | Repeated generation for an unchanged snapshot produces identical canonical signing bytes. |
+| FR-REPO-06 | Sygnit shall sign the canonical repository manifest using the selected private key. | P0 | Manifest signature successfully verifies using the corresponding public key. |
+| FR-REPO-07 | Sygnit shall store the manifest and signature in a documented location without including private-key material. | P0 | Generated output contains the manifest and signature but no private key. |
+| FR-REPO-08 | Sygnit should provide options for handling hidden files, with documented defaults. | P1 | Selected file-inclusion policy is consistently reflected in the manifest. |
+| FR-REPO-09 | Sygnit should define and report how symbolic links are handled. | P1 | Symbolic links follow an explicit, tested policy. |
 
-  -------------------------------------------------------------------------
-  ID                Requirement         Priority          Acceptance
-                                                          measure
-  ----------------- ------------------- ----------------- -----------------
-  FR-REPO-01        Sygnit shall        P0                Test repositories
-                    traverse a selected                   produce the
-                    directory and                         expected file
-                    identify files                        list.
-                    included in the                       
-                    snapshot according                    
-                    to documented                         
-                    rules.                                
-
-  FR-REPO-02        Sygnit shall        P0                Excluded paths
-                    support exclusion                     are absent from
-                    rules for files and                   the manifest.
-                    directories.                          
-
-  FR-REPO-03        Sygnit shall        P0                Every included
-                    calculate a                           file has a
-                    cryptographic hash                    corresponding
-                    for every included                    hash.
-                    regular file.                         
-
-  FR-REPO-04        Sygnit shall        P0                The manifest
-                    generate a                            validates against
-                    versioned manifest                    the published
-                    containing relative                   schema.
-                    paths, hashes,                        
-                    algorithm                             
-                    identifiers, and                      
-                    required metadata.                    
-
-  FR-REPO-05        Sygnit shall        P0                Repeated
-                    serialize manifests                   generation for an
-                    deterministically                     unchanged
-                    under documented                      snapshot produces
-                    canonicalization                      identical
-                    rules.                                canonical signing
-                                                          bytes.
-
-  FR-REPO-06        Sygnit shall sign   P0                The signature
-                    the canonical                         verifies using
-                    manifest using the                    the corresponding
-                    selected private                      public key.
-                    key.                                  
-
-  FR-REPO-07        Sygnit shall store  P0                Generated output
-                    the manifest and                      contains no
-                    signature in a                        private key.
-                    documented location                   
-                    without private key                   
-                    material.                             
-
-  FR-REPO-08        Sygnit should       P1                The selected
-                    provide options for                   policy is
-                    handling hidden                       reflected
-                    files, with                           consistently in
-                    documented                            the manifest.
-                    defaults.                             
-
-  FR-REPO-09        Sygnit should       P1                Symbolic links
-                    define and report                     follow an
-                    how symbolic links                    explicit, tested
-                    are handled.                          policy.
-  -------------------------------------------------------------------------
 
 ### 2.4 Verification and Integrity Reporting
-
-  -----------------------------------------------------------------------
-  ID                Requirement       Priority          Acceptance
-                                                        measure
-  ----------------- ----------------- ----------------- -----------------
-  FR-VERIFY-01      Sygnit shall      P0                Invalid manifest
-                    verify the                          signatures
-                    manifest                            prevent
-                    signature before                    successful
-                    treating its                        verification.
-                    contents as an                      
-                    authenticated                       
-                    reference.                          
-
-  FR-VERIFY-02      Sygnit shall      P0                Recalculated
-                    recalculate                         hashes are
-                    hashes for files                    compared with
-                    listed in the                       authenticated
-                    manifest.                           manifest values.
-
-  FR-VERIFY-03      Sygnit shall      P0                A changed file is
-                    identify modified                   reported with its
-                    files.                              relative path.
-
-  FR-VERIFY-04      Sygnit shall      P0                Missing files are
-                    identify files                      reported with
-                    listed in the                       their relative
-                    manifest that are                   paths.
-                    missing from the                    
-                    verification                        
-                    directory.                          
-
-  FR-VERIFY-05      Sygnit shall      P0                Unlisted files
-                    identify                            are reported when
-                    unexpected files                    strict detection
-                    according to the                    is enabled.
-                    selected                            
-                    verification                        
-                    policy.                             
-
-  FR-VERIFY-06      Sygnit shall      P0                Output does not
-                    distinguish                         label a key
-                    signature                           trusted solely
-                    validity from                       because a
-                    public-key trust.                   signature is
-                                                        mathematically
-                                                        valid.
-
-  FR-VERIFY-07      Sygnit shall      P0                The report
-                    provide an                          includes a
-                    overall result                      summary and
-                    and per-file                        relevant file
-                    verification                        statuses.
-                    details.                            
-
-  FR-VERIFY-08      Sygnit should     P1                Output conforms
-                    support JSON                        to a documented
-                    output for                          JSON schema.
-                    automated                           
-                    processing.                         
-
-  FR-VERIFY-09      Sygnit should     P1                Tests demonstrate
-                    provide strict                      the different
-                    and non-strict                      handling of
-                    verification                        unexpected files
-                    modes with                          and policy
-                    documented                          violations.
-                    behavior.                           
-  -----------------------------------------------------------------------
+| ID | Requirement | Priority | Acceptance measure |
+| --- | --- | --- | --- |
+| FR-VERIFY-01 | Sygnit shall verify the manifest signature before treating its contents as an authenticated reference. | P0 | Invalid manifest signatures prevent successful verification. |
+| FR-VERIFY-02 | Sygnit shall recalculate hashes for files listed in the manifest. | P0 | Recalculated hashes are compared with authenticated manifest values. |
+| FR-VERIFY-03 | Sygnit shall identify modified files during repository verification. | P0 | Modified files are reported with their relative paths. |
+| FR-VERIFY-04 | Sygnit shall identify files listed in the manifest that are missing from the verification directory. | P0 | Missing files are reported with their relative paths. |
+| FR-VERIFY-05 | Sygnit shall identify unexpected files according to the selected verification policy. | P0 | Unlisted files are reported when strict detection is enabled. |
+| FR-VERIFY-06 | Sygnit shall distinguish signature validity from public-key trust. | P0 | Output does not label a key as trusted solely because its signature is mathematically valid. |
+| FR-VERIFY-07 | Sygnit shall provide an overall verification result and per-file details. | P0 | Report includes a summary and relevant file statuses. |
+| FR-VERIFY-08 | Sygnit should support JSON output for automated processing. | P1 | Output conforms to a documented JSON schema. |
+| FR-VERIFY-09 | Sygnit should provide strict and non-strict verification modes with documented behavior. | P1 | Tests demonstrate different handling of unexpected files and policy violations. |
 
 ### 2.5 CLI and User Experience
+| ID | Requirement | Priority | Acceptance measure |
+| --- | --- | --- | --- |
+| FR-CLI-01 | Sygnit shall provide a CLI entry point for supported operations. | P0 | Commands execute successfully through the installed npm package. |
+| FR-CLI-02 | Sygnit shall provide help output describing commands, options, and examples. | P0 | Help is accessible through the documented command or option. |
+| FR-CLI-03 | Sygnit shall return zero for successful operations and non-zero for failed operations. | P0 | Automated tests verify exit codes for success and failure cases. |
+| FR-CLI-04 | Sygnit shall provide actionable error messages without exposing secrets. | P0 | Error tests confirm useful messages and no private-key leakage. |
+| FR-CLI-05 | Sygnit should provide a status or inspection command for signature and manifest metadata. | P1 | Command displays documented metadata without exposing secrets. |
 
-  -----------------------------------------------------------------------
-  ID                Requirement       Priority          Acceptance
-                                                        measure
-  ----------------- ----------------- ----------------- -----------------
-  FR-CLI-01         Sygnit shall      P0                Commands run
-                    provide a CLI                       through the
-                    entry point for                     installed
-                    supported                           package.
-                    operations.                         
-
-  FR-CLI-02         Sygnit shall      P0                Help is available
-                    provide help                        through a
-                    output describing                   documented
-                    commands,                           command or
-                    options, and                        option.
-                    examples.                           
-
-  FR-CLI-03         Sygnit shall      P0                Automated tests
-                    return zero for                     assert exit codes
-                    successful                          for success and
-                    operations and                      failure cases.
-                    non-zero for                        
-                    failed                              
-                    operations.                         
-
-  FR-CLI-04         Sygnit shall      P0                Error tests
-                    provide                             confirm useful
-                    actionable error                    messages and no
-                    messages without                    private-key
-                    exposing secrets.                   leakage.
-
-  FR-CLI-05         Sygnit should     P1                The command
-                    provide a status                    displays
-                    or inspection                       documented
-                    command for                         metadata without
-                    signature and                       exposing secrets.
-                    manifest                            
-                    metadata.                           
-  -----------------------------------------------------------------------
 
 ### 2.6 Automation and Integration
-
-  -----------------------------------------------------------------------
-  ID                Requirement       Priority          Acceptance
-                                                        measure
-  ----------------- ----------------- ----------------- -----------------
-  FR-AUTO-01        Sygnit shall      P0                Core commands run
-                    support                             in a
-                    non-interactive                     non-interactive
-                    execution for                       test environment.
-                    core signing and                    
-                    verification when                   
-                    required inputs                     
-                    are supplied.                       
-
-  FR-AUTO-02        Sygnit shall      P0                Exit codes are
-                    provide stable                      documented and
-                    exit-code                           tested.
-                    behavior suitable                   
-                    for scripts.                        
-
-  FR-AUTO-03        Sygnit should     P1                A documented
-                    provide examples                    example runs
-                    for verification                    verification in
-                    in CI workflows.                    CI.
-
-  FR-AUTO-04        Sygnit may        P2                A future release
-                    provide                             defines and tests
-                    maintained GitHub                   the integration
-                    Actions                             contract.
-                    integration.                        
-  -----------------------------------------------------------------------
+| ID | Requirement | Priority | Acceptance measure |
+| --- | --- | --- | --- |
+| FR-AUTO-01 | Sygnit shall support non-interactive execution for core signing and verification operations when required inputs are supplied. | P0 | Core commands execute in a non-interactive test environment. |
+| FR-AUTO-02 | Sygnit shall provide stable exit-code behavior suitable for scripts. | P0 | Exit codes are documented and covered by automated tests. |
+| FR-AUTO-03 | Sygnit should provide examples for verification in CI workflows. | P1 | A documented example successfully runs verification in a CI environment. |
+| FR-AUTO-04 | Sygnit may provide maintained GitHub Actions integration. | P2 | A future release defines and tests the integration contract. |
 
 ------------------------------------------------------------------------
 
@@ -436,38 +192,14 @@ decisions, implementation tasks, and test cases. Priorities are **P0**
 The following are initial engineering targets. They must be measured on
 documented reference hardware and adjusted using test results.
 
-  -----------------------------------------------------------------------
-  ID                      Requirement             Initial target
-  ----------------------- ----------------------- -----------------------
-  NFR-PERF-01             Sygnit shall generate   Local operation;
-                          keys without            normally complete
-                          unnecessary network     within 2 seconds on
-                          access.                 reference hardware.
-
-  NFR-PERF-02             Sygnit shall process    Memory use remains
-                          files in a streaming    bounded when hashing
-                          manner where practical. large files.
-
-  NFR-PERF-03             Sygnit shall provide    Progress output does
-                          progress information    not corrupt
-                          for operations that     machine-readable
-                          take noticeable time.   output.
-
-  NFR-PERF-04             Sygnit shall support    Test report records
-                          repositories containing elapsed time and peak
-                          at least 10,000 regular memory.
-                          files in performance    
-                          tests.                  
-
-  NFR-PERF-05             Sygnit shall avoid      Performance tests
-                          unnecessary repeated    identify and prevent
-                          hashing within a single avoidable duplicate
-                          operation.              reads.
-
-  NFR-PERF-06             Sygnit shall not        Resource-limit failures
-                          silently omit files due are explicit and
-                          to resource limits.     non-successful.
-  -----------------------------------------------------------------------
+| ID | Requirement | Initial target |
+| --- | --- | --- |
+| NFR-PERF-01 | Sygnit shall generate keys without unnecessary network access. | Local operation; normally complete within 2 seconds on reference hardware. |
+| NFR-PERF-02 | Sygnit shall process files in a streaming manner where practical. | Memory use remains bounded when hashing large files. |
+| NFR-PERF-03 | Sygnit shall provide progress information for operations that take noticeable time. | Progress output does not corrupt machine-readable output. |
+| NFR-PERF-04 | Sygnit shall support repositories containing at least 10,000 regular files in performance tests. | Test report records elapsed time and peak memory. |
+| NFR-PERF-05 | Sygnit shall avoid unnecessary repeated hashing within a single operation. | Performance tests identify and prevent avoidable duplicate reads. |
+| NFR-PERF-06 | Sygnit shall not silently omit files due to resource limits. | Resource-limit failures are explicit and non-successful. |
 
 ### 3.2 Safety Invariants and Constraints --- High
 
@@ -500,90 +232,20 @@ documented reference hardware and adjusted using test results.
 
 ### 3.3 Security NFRs --- High
 
-  -----------------------------------------------------------------------
-  ID                      Requirement             Priority
-  ----------------------- ----------------------- -----------------------
-  NFR-SEC-01              Sygnit shall use        High
-                          established             
-                          cryptographic           
-                          implementations and     
-                          shall not implement     
-                          custom signature        
-                          algorithms.             
-
-  NFR-SEC-02              The initial signing     High
-                          algorithm shall be      
-                          Ed25519, subject to     
-                          compatibility and       
-                          security review.        
-
-  NFR-SEC-03              The initial             High
-                          file-hashing algorithm  
-                          shall be SHA-256 or     
-                          another explicitly      
-                          approved secure hash    
-                          algorithm.              
-
-  NFR-SEC-04              The signed payload      High
-                          shall use a             
-                          deterministic,          
-                          documented              
-                          representation.         
-
-  NFR-SEC-05              Signature metadata      High
-                          shall identify format   
-                          version and algorithm   
-                          identifiers needed for  
-                          safe verification.      
-
-  NFR-SEC-06              Sygnit shall validate   High
-                          manifest structure,     
-                          path values, file       
-                          counts, and input sizes 
-                          before processing.      
-
-  NFR-SEC-07              Sygnit shall use        High
-                          restrictive file        
-                          permissions for newly   
-                          generated private keys  
-                          where the operating     
-                          system supports them.   
-
-  NFR-SEC-08              Sygnit shall warn users High
-                          when private-key        
-                          storage permissions are 
-                          broader than            
-                          recommended, where      
-                          detectable.             
-
-  NFR-SEC-09              Sygnit shall not        High
-                          transmit file contents, 
-                          private keys, or        
-                          signing metadata to a   
-                          remote service during   
-                          local signing and       
-                          verification.           
-
-  NFR-SEC-10              Sygnit shall document   High
-                          the trust model and     
-                          explain that users must 
-                          obtain public keys      
-                          through a trusted       
-                          channel.                
-
-  NFR-SEC-11              Sygnit shall provide a  High
-                          process for reporting   
-                          security                
-                          vulnerabilities.        
-
-  NFR-SEC-12              Sygnit shall be tested  High
-                          against malformed       
-                          manifests, invalid      
-                          signatures, path        
-                          traversal attempts, and 
-                          adversarial file-system 
-                          cases.                  
-  -----------------------------------------------------------------------
+| ID | Requirement | Priority |
+| --- | --- | --- |
+| NFR-SEC-01 | Sygnit shall use established cryptographic implementations and shall not implement custom signature algorithms. | High |
+| NFR-SEC-02 | The initial signing algorithm shall be Ed25519, subject to compatibility and security review. | High |
+| NFR-SEC-03 | The initial file-hashing algorithm shall be SHA-256 or another explicitly approved secure hash algorithm. | High |
+| NFR-SEC-04 | The signed payload shall use a deterministic, documented representation. | High |
+| NFR-SEC-05 | Signature metadata shall identify format version and algorithm identifiers needed for safe verification. | High |
+| NFR-SEC-06 | Sygnit shall validate manifest structure, path values, file counts, and input sizes before processing. | High |
+| NFR-SEC-07 | Sygnit shall use restrictive file permissions for newly generated private keys where the operating system supports them. | High |
+| NFR-SEC-08 | Sygnit shall warn users when private-key storage permissions are broader than recommended, where detectable. | High |
+| NFR-SEC-09 | Sygnit shall not transmit file contents, private keys, or signing metadata to a remote service during local signing and verification. | High |
+| NFR-SEC-10 | Sygnit shall document the trust model and explain that users must obtain public keys through a trusted channel. | High |
+| NFR-SEC-11 | Sygnit shall provide a process for reporting security vulnerabilities. | High |
+| NFR-SEC-12 | Sygnit shall be tested against malformed manifests, invalid signatures, path traversal attempts, and adversarial file-system cases. | High |
 
 ------------------------------------------------------------------------
 
@@ -595,32 +257,17 @@ The primary user interface shall be a command-line interface.
 
 Proposed command structure:
 
-  -----------------------------------------------------------------------
-  Command                             Purpose
-  ----------------------------------- -----------------------------------
-  `sygnit init`                       Initialize configuration or
-                                      generate initial keys, according to
-                                      finalized command design.
-
-  `sygnit keygen`                     Generate a signing key pair.
-
-  `sygnit sign <file>`                Sign an individual file.
-
-  `sygnit sign <directory>`           Generate and sign a repository
-                                      snapshot manifest.
-
-  `sygnit verify <file>`              Verify an individual file
-                                      signature.
-
-  `sygnit verify <directory>`         Verify a repository snapshot.
-
-  `sygnit status <directory>`         Inspect available Sygnit metadata
-                                      and report status.
-
-  `sygnit --help`                     Display command help.
-
-  `sygnit --version`                  Display the installed version.
-  -----------------------------------------------------------------------
+| Command | Purpose |
+| --- | --- |
+| `sygnit init` | Initialize configuration or generate initial keys, according to finalized command design. |
+| `sygnit keygen` | Generate a signing key pair. |
+| `sygnit sign <file>` | Sign an individual file. |
+| `sygnit sign <directory>` | Generate and sign a repository snapshot manifest. |
+| `sygnit verify <file>` | Verify an individual file signature. |
+| `sygnit verify <directory>` | Verify a repository snapshot. |
+| `sygnit status <directory>` | Inspect available Sygnit metadata and report status. |
+| `sygnit --help` | Display command help. |
+| `sygnit --version` | Display the installed version. |
 
 The final command names and options shall be confirmed during CLI
 design. These examples are proposed interfaces, not a finalized public
@@ -800,36 +447,17 @@ reproduced.
 
 ### 5.7 Evaluation Metrics
 
-  -----------------------------------------------------------------------
-  Metric                              Evaluation method
-  ----------------------------------- -----------------------------------
-  Signature correctness               Valid signatures pass; invalid
-                                      signatures fail.
-
-  Tamper detection                    Modified file content is detected.
-
-  Missing-file detection              Files in the manifest but absent
-                                      from the snapshot are reported.
-
-  Unexpected-file detection           Unlisted files are reported
-                                      according to policy.
-
-  Key confidentiality                 No private-key material appears in
-                                      generated metadata or logs.
-
-  Manifest determinism                Equivalent snapshots produce
-                                      identical canonical manifest bytes.
-
-  Compatibility                       Core test suite passes on supported
-                                      environments.
-
-  Performance                         Time and memory use are measured
-                                      against documented test
-                                      repositories.
-
-  Usability                           New users can complete the
-                                      documented quick-start workflow.
-  -----------------------------------------------------------------------
+| Metric | Evaluation method |
+| --- | --- |
+| Signature correctness | Valid signatures pass; invalid signatures fail. |
+| Tamper detection | Modified file content is detected. |
+| Missing-file detection | Files in the manifest but absent from the snapshot are reported. |
+| Unexpected-file detection | Unlisted files are reported according to policy. |
+| Key confidentiality | No private-key material appears in generated metadata or logs. |
+| Manifest determinism | Equivalent snapshots produce identical canonical manifest bytes. |
+| Compatibility | Core test suite passes on supported environments. |
+| Performance | Time and memory use are measured against documented test repositories. |
+| Usability | New users can complete the documented quick-start workflow. |
 
 ### 5.8 Release Testing
 
@@ -903,29 +531,12 @@ Timestamps alone do not prove when a signature was created.
 
 ### 6.5 Rollout Plan
 
-  -----------------------------------------------------------------------
-  Release stage           Scope                   Exit condition
-  ----------------------- ----------------------- -----------------------
-  Internal prototype      Validate key            Core workflows pass
-                          generation, hashing,    local tests.
-                          manifest creation,      
-                          signing, and            
-                          verification.           
-
-  MVP / 0.1.x             Release essential file  MVP acceptance criteria
-                          and repository signing  are met.
-                          and verification.       
-
-  Feature releases /      Improve reports,        Each milestone's
-  0.2.x--0.3.x            configuration,          acceptance criteria are
-                          automation, and         met.
-                          integrations.           
-
-  Stable release / 1.0.0  Complete security       Stable-release review
-                          review, documentation,  is approved.
-                          compatibility policy,   
-                          and release process.    
-  -----------------------------------------------------------------------
+| Release stage | Scope | Exit condition |
+| --- | --- | --- |
+| Internal prototype | Validate key generation, hashing, manifest creation, signing, and verification. | Core workflows pass local tests. |
+| MVP / 0.1.x | Release essential file and repository signing and verification. | MVP acceptance criteria are met. |
+| Feature releases / 0.2.x--0.3.x | Improve reports, configuration, automation, and integrations. | Each milestone's acceptance criteria are met. |
+| Stable release / 1.0.0 | Complete security review, documentation, compatibility policy, and release process. | Stable-release review is approved. |
 
 ### 6.6 Maintenance and Support
 
@@ -946,34 +557,16 @@ implementation task, and test case before the corresponding release.
 
 Example traceability structure:
 
-  -----------------------------------------------------------------------
-  Requirement ID    Design reference  Implementation    Test reference
-                                      task              
-  ----------------- ----------------- ----------------- -----------------
-  FR-KEY-01         Key management    Key-pair          TEST-KEY-001
-                    design            generation        
-
-  FR-FILE-02        File signing      File signature    TEST-FILE-002
-                    design            creation          
-
-  FR-REPO-04        Manifest          Manifest          TEST-REPO-004
-                    specification     generation        
-
-  FR-REPO-06        Signature format  Manifest signing  TEST-REPO-006
-                    design                              
-
-  FR-VERIFY-03      Verification      Modified-file     TEST-VERIFY-003
-                    report design     detection         
-
-  FR-VERIFY-04      Verification      Missing-file      TEST-VERIFY-004
-                    report design     detection         
-
-  NFR-SEC-01        Cryptographic     Approved crypto   TEST-SEC-001
-                    design review     implementation    
-
-  NFR-SEC-06        Input validation  Manifest and path TEST-SEC-006
-                    design            validation        
-  -----------------------------------------------------------------------
+| Requirement ID | Design reference | Implementation task | Test reference |
+| --- | --- | --- | --- |
+| FR-KEY-01 | Key management design | Key-pair generation | TEST-KEY-001 |
+| FR-FILE-02 | File signing design | File signature creation | TEST-FILE-002 |
+| FR-REPO-04 | Manifest specification | Manifest generation | TEST-REPO-004 |
+| FR-REPO-06 | Signature format design | Manifest signing | TEST-REPO-006 |
+| FR-VERIFY-03 | Verification report design | Modified-file detection | TEST-VERIFY-003 |
+| FR-VERIFY-04 | Verification report design | Missing-file detection | TEST-VERIFY-004 |
+| NFR-SEC-01 | Cryptographic design review | Approved crypto implementation | TEST-SEC-001 |
+| NFR-SEC-06 | Input validation design | Manifest and path validation | TEST-SEC-006 |
 
 The traceability table shall be expanded as requirements, design
 documents, implementation issues, and test cases are created. Changes to
@@ -984,59 +577,21 @@ tests, and documentation.
 
 ## Appendix A --- Glossary
 
-  -----------------------------------------------------------------------
-  Term                                Definition
-  ----------------------------------- -----------------------------------
-  Digital signature                   A cryptographic value created with
-                                      a private key and verified with the
-                                      corresponding public key.
-
-  Private key                         Secret key material used to create
-                                      digital signatures.
-
-  Public key                          Key material used to verify
-                                      signatures and identify the
-                                      corresponding key pair.
-
-  Hash                                A fixed-length digest calculated
-                                      from input data using a
-                                      cryptographic hash function.
-
-  Manifest                            A structured document describing
-                                      the files and metadata included in
-                                      a repository snapshot.
-
-  Repository snapshot                 A defined collection of files and
-                                      paths at a particular point in
-                                      time, independent of whether it is
-                                      stored in Git.
-
-  Integrity                           The property that data has not
-                                      changed relative to a trusted
-                                      reference.
-
-  Authenticity                        Confidence that data or a signature
-                                      is associated with the expected key
-                                      or identity under a defined trust
-                                      model.
-
-  Provenance                          Information about the origin and
-                                      history of software or an artifact.
-
-  CI/CD                               Continuous Integration and
-                                      Continuous Delivery or Deployment.
-
-  Canonicalization                    Conversion of structured data into
-                                      a deterministic representation
-                                      before signing or hashing.
-
-  Ed25519                             A public-key digital signature
-                                      algorithm based on Edwards-curve
-                                      Digital Signature Algorithm.
-
-  SHA-256                             A cryptographic hash function that
-                                      produces a 256-bit digest.
-  -----------------------------------------------------------------------
+| Term | Definition |
+| --- | --- |
+| Digital signature | A cryptographic value created with a private key and verified with the corresponding public key. |
+| Private key | Secret key material used to create digital signatures. |
+| Public key | Key material used to verify signatures and identify the corresponding key pair. |
+| Hash | A fixed-length digest calculated from input data using a cryptographic hash function. |
+| Manifest | A structured document describing the files and metadata included in a repository snapshot. |
+| Repository snapshot | A defined collection of files and paths at a particular point in time, independent of whether it is stored in Git. |
+| Integrity | The property that data has not changed relative to a trusted reference. |
+| Authenticity | Confidence that data or a signature is associated with the expected key or identity under a defined trust model. |
+| Provenance | Information about the origin and history of software or an artifact. |
+| CI/CD | Continuous Integration and Continuous Delivery or Deployment. |
+| Canonicalization | Conversion of structured data into a deterministic representation before signing or hashing. |
+| Ed25519 | A public-key digital signature algorithm based on Edwards-curve Digital Signature Algorithm. |
+| SHA-256 | A cryptographic hash function that produces a 256-bit digest. |
 
 ## Appendix B --- Open Decisions
 
