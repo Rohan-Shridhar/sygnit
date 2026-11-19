@@ -62,7 +62,7 @@ alternatives, and reason for building Sygnit are clearly documented.
 
 ------------------------------------------------------------------------
 
-## 2. Product Requirements and Definition
+## 2. Product Requirements and Definition - Done ✅
 
 ### Purpose
 
@@ -128,7 +128,7 @@ assumptions.
 
 ------------------------------------------------------------------------
 
-## 3. Product Scope and Roadmap
+## 3. Product Scope and Roadmap - Done ✅
 
 ### Purpose
 
