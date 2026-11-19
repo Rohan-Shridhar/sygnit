@@ -60,4 +60,4 @@ Sygnit v0.1.0 is considered complete when:
 **Target Release:** v0.1.0  
 **Document Version:** 1.0  
 **Status:** Planned  
-**Last Updated:** November 2026
+**Last Updated:** 19th November 2026
